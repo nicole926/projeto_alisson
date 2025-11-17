@@ -37,7 +37,17 @@ values ('Zezão','456');
 insert into usuario(nome,senha)
 values ('Nicole','234');
 
-select  * from usuario;]]></console>
+select  * from usuario;
+
+CREATE TABLE cliente (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome varchar(100) NOT NULL,
+    email varchar(100) NOT NULL,
+    telefone varchar(20) not  null 
+);
+
+insert into cliente(nome,email,telefone)
+values ('Nicole','nicole@gmail.com','(11)1111-1111'),('Chico Amaro','chico@gmail.com','(22)2222-2222'),('Zuzu','zuzu@gmail.com','(33)3333-3333');]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
