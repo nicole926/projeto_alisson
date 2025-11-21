@@ -145,6 +145,10 @@
         function abrirEdicao(id) {
             document.getElementById("edit-" + id).style.display = "block";
         }
+
+        function confirmarExclusao() {
+            return confirm("Tem certeza que deseja excluir este cliente?");
+        }
     </script>
 </head>
 <body>
@@ -156,7 +160,6 @@
     <div class="add-card">
         <h2>Adicionar Novo Cliente</h2>
 
-        <!-- CORREÇÃO AQUI -->
         <form action="/listar_clientes" method="post">
             <input type="text" name="nome" placeholder="Nome completo" required>
             <input type="text" name="telefone" placeholder="Telefone" required>
@@ -167,7 +170,6 @@
 
     <h2>Clientes Cadastrados</h2>
 
-    <!-- CORREÇÃO DO IF -->
     {% if len(clientes) == 0 %}
         <p class="no-data">Nenhum cliente cadastrado ainda.</p>
     {% end %}
@@ -181,7 +183,7 @@
         <div class="actions">
             <button class="btn-edit" onclick="abrirEdicao({{ id }})">Editar</button>
 
-            <form action="/deletar_cliente" method="post">
+            <form action="/deletar_cliente" method="post" onsubmit="return confirmarExclusao()">
                 <input type="hidden" name="id" value="{{ id }}">
                 <button class="btn-delete" type="submit">Excluir</button>
             </form>
@@ -190,9 +192,12 @@
         <div class="edit-box" id="edit-{{ id }}" style="display:none;">
             <form action="/editar_cliente" method="post">
                 <input type="hidden" name="id" value="{{ id }}">
-                <input type="text" name="nome" placeholder="Novo nome" required>
-                <input type="text" name="telefone" placeholder="Novo telefone" required>
-                <input type="email" name="email" placeholder="Novo e-mail" required>
+
+                <!-- CAMPOS JÁ PREENCHIDOS -->
+                <input type="text" name="nome" value="{{ nome.strip() }}" required>
+                <input type="text" name="telefone" value="{{ telefone.strip() }}" required>
+                <input type="text" name="email" value="{{ email.strip() }}" required>
+
                 <button class="btn-edit">Salvar</button>
             </form>
         </div>
