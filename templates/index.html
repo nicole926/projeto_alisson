@@ -3,46 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Início</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #eef2f3;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .card {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.15);
-            text-align: center;
-        }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 20px;
-            background: #4b79a1;
-            color: white;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        a:hover {
-            background: #35516b;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ static_url('css/index.css') }}?v=1.0">
+
 </head>
 <body>
+<nav class="menu">
+    <a href="/index">Início</a>
+</nav>
 
-<div class="card">
-    <h2>Bem-vindo ao Sistema</h2>
-    <p>Clique abaixo para vizualizar os clientes cadastrados:</p>
+<div class="container">
+    <h1>Bem-vindo ao Sistema</h1>
 
-    <a href="/listar_clientes">Listar Clientes</a>
+    <div class="botoes">
+        <a href="/listar_cliente">Clientes</a>
+    </div>
 </div>
+
 
 </body>
 </html>

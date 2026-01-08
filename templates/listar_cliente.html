@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes</title>
+    <link rel="stylesheet" href="{{ static_url('css/style.css') }}?v=1.0">
+</head>
+<body>
+
+<!-- MENU SUPERIOR -->
+<nav class="menu">
+    <h1>Sistema de Clientes</h1>
+</nav>
+
+<main class="container">
+
+    <!-- TOPO COM BOTÕES -->
+    <div class="topo-clientes">
+        <a href="/index" class="btn-inicio">Início</a>
+        <a href="/historico" class="btn-historico">Histórico</a>
+        <a href="/clientes_view" class="btn-historico">Ver clientes completos</a>
+
+    </div>
+
+    <!-- CADASTRO -->
+    <section class="card">
+        <h2>Cadastrar Cliente</h2>
+
+        <form method="post" class="form">
+            <input type="text" name="nome" placeholder="Nome" required>
+            <input type="text" name="telefone" placeholder="Telefone" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <button type="submit">Adicionar</button>
+        </form>
+    </section>
+
+    <!-- LISTA -->
+    <section class="card">
+        <h2>Lista de Clientes</h2>
+
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>Email</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for id, nome, telefone, email in clientes %}
+                <tr>
+                    <td>{{ id }}</td>
+                    <td>{{ nome }}</td>
+                    <td>{{ telefone }}</td>
+                    <td>{{ email }}</td>
+                    <td class="acoes">
+
+                        <!-- EDITAR -->
+                        <form action="/editar_cliente" method="post" class="form-inline">
+                            <input type="hidden" name="id" value="{{ id }}">
+                            <input type="text" name="nome" value="{{ nome }}">
+                            <input type="text" name="telefone" value="{{ telefone }}">
+                            <input type="email" name="email" value="{{ email }}">
+                            <button type="submit" class="btn-editar">Editar</button>
+                        </form>
+
+                        <!-- EXCLUIR -->
+                    <td class="acoes">
+                        <form action="/deletar_cliente" method="post" class="form-inline">
+                            <input type="hidden" name="id" value="{{ id }}">
+                            <button type="submit" class="btn-excluir">Excluir</button>
+                        </form>
+
+                    </td>
+                </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </section>
+
+</main>
+
+</body>
+</html>
