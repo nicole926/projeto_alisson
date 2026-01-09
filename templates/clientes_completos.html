@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes Completos</title>
+    <link rel="stylesheet" href="{{ static_url('css/style.css') }}?v=2.0">
+</head>
+<body>
+
+<header class="app-header">
+    📋 Clientes – Cadastro Completo
+</header>
+
+<div class="container">
+
+    <div class="topo-clientes">
+        <a href="/listar_cliente" class="btn-inicio">← Voltar</a>
+        <a href="/historico" class="btn-historico">Histórico</a>
+    </div>
+
+    {% for c in clientes %}
+    <div class="client-card">
+        <div class="client-title">{{ c[1] }}</div>
+
+        <div class="client-info">📞 {{ c[3] }}</div>
+        <div class="client-info">✉️ {{ c[2] }}</div>
+        <div class="client-info">📌 Status: {{ c[4] }}</div>
+        <div class="client-info">🏠 {{ c[5] }}, {{ c[6] }} - {{ c[7] }}</div>
+    </div>
+    {% end %}
+
+</div>
+
+</body>
+</html>

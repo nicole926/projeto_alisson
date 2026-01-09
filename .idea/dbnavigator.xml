@@ -24,30 +24,214 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="b063ba29-79d1-47d7-a2cf-a623e0942e90">
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[create table usuario(
-nome varchar(100),
-senha varchar(100)
-);
-insert into usuario(nome,senha)
-values ('aluno','123');
-
-insert into usuario(nome,senha)
-values ('Zezão','456');
-
-insert into usuario(nome,senha)
-values ('Nicole','234');
-
-select  * from usuario;
-
-CREATE TABLE cliente (
+      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[CREATE TABLE contatos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome varchar(100) NOT NULL,
-    email varchar(100) NOT NULL,
-    telefone varchar(20) not  null 
+    nome TEXT NOT NULL,
+    telefone TEXT NOT NULL,
+    email TEXT NOT NULL,
+    status_id INTEGER,
+    FOREIGN KEY (status_id) REFERENCES status_cliente(id)
 );
 
-insert into cliente(nome,email,telefone)
-values ('Nicole','nicole@gmail.com','(11)1111-1111'),('Chico Amaro','chico@gmail.com','(22)2222-2222'),('Zuzu','zuzu@gmail.com','(33)3333-3333');]]></console>
+
+insert into contatos(nome,email,telefone)
+values ('nicole','nicole@gmail.com','(11)1111-1111');
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario TEXT NOT NULL,
+    senha TEXT NOT NULL
+);
+
+INSERT INTO usuarios (usuario, senha)
+VALUES ('nicole', '1234'),('aluno','123');
+
+SELECT * FROM usuarios;
+
+CREATE TABLE if not exists enderecos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    contato_id INTEGER NOT NULL,
+    rua TEXT NOT NULL,
+    cidade TEXT NOT NULL,
+    estado TEXT NOT NULL,
+    FOREIGN KEY (contato_id) REFERENCES contatos(id)
+);
+
+CREATE TABLE status_cliente (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    descricao TEXT NOT NULL
+);
+
+INSERT INTO status_cliente (descricao) VALUES
+('Ativo'),
+('Inativo'),
+('Bloqueado');
+
+
+CREATE TABLE logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tabela TEXT NOT NULL,
+    operacao TEXT NOT NULL,
+    data_hora DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE logs ADD COLUMN descricao TEXT;
+
+
+-- view
+drop view vw_clientes_completos;
+
+CREATE VIEW vw_clientes_completos AS
+SELECT
+    c.id AS cliente_id,
+    c.nome,
+    c.email,
+    c.telefone,
+    s.descricao AS status,
+    e.rua,
+    e.cidade,
+    e.estado
+FROM contatos c
+LEFT JOIN status_cliente s ON c.status_id = s.id
+LEFT JOIN enderecos e ON c.id = e.contato_id;
+
+-- triggers
+
+-- insert
+CREATE TRIGGER trg_insert_contatos
+AFTER INSERT ON contatos
+BEGIN
+    INSERT INTO logs (tabela, operacao, descricao)
+    VALUES (
+        'contatos',
+        'INSERT',
+        'Contato "' || NEW.nome || '" foi ADICIONADO'
+    );
+END;
+
+
+-- update
+CREATE TRIGGER trg_update_contatos
+AFTER UPDATE ON contatos
+BEGIN
+    INSERT INTO logs (tabela, operacao, descricao)
+    VALUES (
+        'contatos',
+        'UPDATE',
+        'Contato "' || NEW.nome || '" foi EDITADO'
+    );
+END;
+
+-- delete
+CREATE TRIGGER trg_delete_contatos
+AFTER DELETE ON contatos
+BEGIN
+    INSERT INTO logs (tabela, operacao, descricao)
+    VALUES (
+        'contatos',
+        'DELETE',
+        'Contato "' || OLD.nome || '" foi EXCLUÍDO'
+    );
+END;
+
+
+-- testando
+INSERT INTO contatos (nome, telefone, email, status_id)
+VALUES ('Mri', '9900-0099', 'mari@gmail.com', 1);
+
+UPDATE contatos SET telefone = '8888-8888' WHERE nome = 'Maria';
+
+DELETE FROM contatos WHERE nome = 'Maria';
+
+SELECT * FROM logs;
+
+INSERT INTO contatos (nome, telefone, email, status_id)
+VALUES ('Teste', '9980', 'testando@email.com', 2);
+
+SELECT * FROM logs;
+SELECT * FROM vw_clientes_completos;
+
+DELETE FROM contatos WHERE nome = 'Teste';
+SELECT * FROM logs;
+
+-- INSERT (vai gerar log)
+INSERT INTO contatos (nome, telefone, email, status_id)
+VALUES ('Testezin', '9880', 'testaê@email.com', 2);
+
+-- UPDATE (vai gerar log)
+UPDATE contatos SET telefone = '7777-7777' WHERE nome = 'Testezin';
+
+-- DELETE (vai gerar log)
+DELETE FROM contatos WHERE nome = 'Testezin';
+
+-- VER LOGS
+SELECT * FROM logs;
+
+SELECT name FROM sqlite_master WHERE type = 'trigger';
+
+INSERT INTO contatos (nome, telefone, email)
+VALUES ('Maria', '9999', 'maria@email.com');
+
+UPDATE contatos SET telefone = '8888' WHERE nome = 'Maria';
+
+DELETE FROM contatos WHERE nome = 'Maria';
+
+SELECT descricao, data_hora FROM logs;
+
+select  * from contatos;
+
+INSERT INTO contatos (nome, telefone, email, status_id) VALUES
+('Ana Silva', '(11) 98888-1111', 'ana.silva@gmail.com', 1),
+('Bruno Costa', '(21) 97777-2222', 'bruno.costa@gmail.com', 1),
+('Carla Souza', '(31) 96666-3333', 'carla.souza@gmail.com', 2),
+('Diego Lima', '(41) 95555-4444', 'diego.lima@gmail.com', 1),
+('Eduarda Rocha', '(51) 94444-5555', 'eduarda.rocha@gmail.com', 3);
+
+INSERT INTO enderecos (contato_id, rua, cidade, estado) VALUES
+(1, 'Rua das Flores, 120', 'São Paulo', 'SP'),
+(2, 'Av. Atlântica, 455', 'Rio de Janeiro', 'RJ'),
+(3, 'Rua Central, 78', 'Belo Horizonte', 'MG'),
+(4, 'Rua Paraná, 900', 'Curitiba', 'PR'),
+(5, 'Av. Brasil, 1500', 'Porto Alegre', 'RS');
+
+INSERT INTO enderecos (contato_id, rua, cidade, estado)
+VALUES (
+    6,
+    'Rua das Acácias, 450',
+    'Belo Horizonte',
+    'MG'
+);
+
+
+SELECT contato_id, COUNT(*) 
+FROM enderecos
+GROUP BY contato_id
+HAVING COUNT(*) > 1;
+
+DELETE FROM enderecos
+WHERE id NOT IN (
+    SELECT MIN(id)
+    FROM enderecos
+    GROUP BY contato_id
+);
+UPDATE contatos
+SET status_id = 1
+WHERE id = 1;
+
+INSERT INTO enderecos (contato_id, rua, cidade, estado)
+VALUES (1, 'Rua das Flores, 120', 'São Paulo', 'SP');
+
+INSERT INTO enderecos (contato_id, rua, cidade, estado)
+VALUES (7, 'Rua Paraná, 900', 'Curitiba', 'PR');
+
+INSERT INTO enderecos (contato_id, rua, cidade, estado)
+VALUES (8, 'Av. Brasil, 1500', 'Porto Alegre', 'RS');
+
+SELECT * FROM vw_clientes_completos;
+
+DELETE FROM enderecos
+WHERE contato_id = 3;
+DELETE FROM contatos
+WHERE id = 3;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">

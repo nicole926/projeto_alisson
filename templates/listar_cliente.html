@@ -3,85 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <title>Clientes</title>
-    <link rel="stylesheet" href="{{ static_url('css/style.css') }}?v=1.0">
+    <link rel="stylesheet" href="{{ static_url('css/style.css') }}?v=2.0">
+
+    <script>
+        function abrirEdicao(id) {
+            document.getElementById("edit-" + id).style.display = "block";
+        }
+
+        function confirmarExclusao() {
+            return confirm("⚠️ Tem certeza que deseja excluir este contato?");
+        }
+    </script>
 </head>
 <body>
 
-<!-- MENU SUPERIOR -->
-<nav class="menu">
-    <h1>Sistema de Clientes</h1>
-</nav>
+<header class="app-header">
+    📒 Gerenciamento de Clientes
+</header>
 
-<main class="container">
+<form method="get" action="/listar_cliente" class="form-busca">
+    <input
+        type="text"
+        name="busca"
+        placeholder="Buscar cliente..."
+        value="{{ busca }}"
+    >
+    <button type="submit">Buscar</button>
+</form>
 
-    <!-- TOPO COM BOTÕES -->
+<div class="container">
+
+    <!-- TOPO -->
     <div class="topo-clientes">
         <a href="/index" class="btn-inicio">Início</a>
         <a href="/historico" class="btn-historico">Histórico</a>
-        <a href="/clientes_view" class="btn-historico">Ver clientes completos</a>
-
+        <a href="/clientes_completos" class="btn-view">Clientes Completos</a>
     </div>
 
     <!-- CADASTRO -->
-    <section class="card">
-        <h2>Cadastrar Cliente</h2>
+    <div class="add-card">
+        <h2>Adicionar Cliente</h2>
 
-        <form method="post" class="form">
-            <input type="text" name="nome" placeholder="Nome" required>
+        <form method="post" class="form-grid">
+            <input type="text" name="nome" placeholder="Nome completo" required>
             <input type="text" name="telefone" placeholder="Telefone" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <button type="submit">Adicionar</button>
+            <input type="email" name="email" placeholder="E-mail" required>
+
+            <select name="status_id" required>
+                <option value="">Status</option>
+                <option value="1">Ativo</option>
+                <option value="2">Inativo</option>
+            </select>
+
+            <input type="text" name="rua" placeholder="Rua" required>
+            <input type="text" name="cidade" placeholder="Cidade" required>
+            <input type="text" name="estado" placeholder="Estado" required>
+
+            <button class="btn-add">Adicionar</button>
         </form>
-    </section>
+    </div>
 
-    <!-- LISTA -->
-    <section class="card">
-        <h2>Lista de Clientes</h2>
+    <h2 class="titulo-lista">Clientes Cadastrados</h2>
 
-        <table class="tabela">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Telefone</th>
-                    <th>Email</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
+    {% for id, nome, telefone, email in clientes %}
+    <div class="client-card">
 
-            <tbody>
-                {% for id, nome, telefone, email in clientes %}
-                <tr>
-                    <td>{{ id }}</td>
-                    <td>{{ nome }}</td>
-                    <td>{{ telefone }}</td>
-                    <td>{{ email }}</td>
-                    <td class="acoes">
+        <div class="client-title">{{ nome }}</div>
+        <div class="client-info">📞 {{ telefone }}</div>
+        <div class="client-info">✉️ {{ email }}</div>
 
-                        <!-- EDITAR -->
-                        <form action="/editar_cliente" method="post" class="form-inline">
-                            <input type="hidden" name="id" value="{{ id }}">
-                            <input type="text" name="nome" value="{{ nome }}">
-                            <input type="text" name="telefone" value="{{ telefone }}">
-                            <input type="email" name="email" value="{{ email }}">
-                            <button type="submit" class="btn-editar">Editar</button>
-                        </form>
+        <div class="actions">
+            <button class="btn-edit" onclick="abrirEdicao({{ id }})">Editar</button>
 
-                        <!-- EXCLUIR -->
-                    <td class="acoes">
-                        <form action="/deletar_cliente" method="post" class="form-inline">
-                            <input type="hidden" name="id" value="{{ id }}">
-                            <button type="submit" class="btn-excluir">Excluir</button>
-                        </form>
+            <form action="/deletar_cliente" method="post"
+              onsubmit="return confirm('Tem certeza que deseja excluir este contato?')">
 
-                    </td>
-                </tr>
-                {% end %}
-            </tbody>
-        </table>
-    </section>
+            <input type="hidden" name="id" value="{{ cliente[0] }}">
+            <button class="btn-excluir">Excluir</button>
+            </form>
 
-</main>
+        </div>
+
+        <div class="edit-box" id="edit-{{ id }}" style="display:none;">
+            <form action="/editar_cliente" method="post" class="form-grid">
+                <input type="hidden" name="id" value="{{ id }}">
+                <input type="text" name="nome" value="{{ nome }}" required>
+                <input type="text" name="telefone" value="{{ telefone }}" required>
+                <input type="email" name="email" value="{{ email }}" required>
+                <button class="btn-edit">Salvar</button>
+            </form>
+        </div>
+
+    </div>
+    {% end %}
+
+</div>
 
 </body>
 </html>

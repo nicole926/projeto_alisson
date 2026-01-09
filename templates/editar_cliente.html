@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Cliente</title>
+    <link rel="stylesheet" href="{{ static_url('css/style.css') }}?v=3.0">
+</head>
+<body>
+
+<header class="app-header">✏️ Editar Cliente</header>
+
+<div class="container card">
+
+<form method="post">
+    <input type="text" name="nome" value="{{ cliente[1] }}" required>
+    <input type="email" name="email" value="{{ cliente[2] }}" required>
+    <input type="text" name="telefone" value="{{ cliente[3] }}" required>
+
+    <select name="status">
+        <option value="1" {% if cliente[4] == 1 %}selected{% end %}>Ativo</option>
+        <option value="2" {% if cliente[4] == 2 %}selected{% end %}>Inativo</option>
+    </select>
+
+    <input type="text" name="rua" value="{{ cliente[5] }}">
+    <input type="text" name="cidade" value="{{ cliente[6] }}">
+    <input type="text" name="estado" value="{{ cliente[7] }}">
+
+    <button class="btn-editar">Salvar Alterações</button>
+</form>
+
+</div>
+
+</body>
+</html>

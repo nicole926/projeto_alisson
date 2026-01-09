@@ -47,19 +47,77 @@ class Index(tornado.web.RequestHandler):
 # ------------------ CLIENTES ------------------
 class Clientes(tornado.web.RequestHandler):
     def get(self):
-        query = "SELECT id, nome, telefone, email FROM contatos"
-        clientes = conexao_db(query)
-        self.render("listar_cliente.html", clientes=clientes)
+        busca = self.get_argument("busca", "")
+
+        if busca:
+            query = """
+                SELECT id, nome, telefone, email
+                FROM contatos
+                WHERE nome LIKE ?
+                   OR telefone LIKE ?
+                   OR email LIKE ?
+            """
+            clientes = conexao_db(
+                query,
+                (f"%{busca}%", f"%{busca}%", f"%{busca}%")
+            )
+        else:
+            query = "SELECT id, nome, telefone, email FROM contatos"
+            clientes = conexao_db(query)
+
+        self.render(
+            "listar_cliente.html",
+            clientes=clientes,
+            busca=busca
+        )
 
     def post(self):
         nome = self.get_argument("nome")
         telefone = self.get_argument("telefone")
         email = self.get_argument("email")
+        status_id = self.get_argument("status_id")
+        rua = self.get_argument("rua")
+        cidade = self.get_argument("cidade")
+        estado = self.get_argument("estado")
 
-        query = "INSERT INTO contatos (nome, telefone, email) VALUES (?, ?, ?)"
-        conexao_db(query, (nome, telefone, email))
+        conexao = sqlite3.connect("db/db.sqlite3")
+        cursor = conexao.cursor()
+
+        # INSERE CONTATO
+        cursor.execute("""
+            INSERT INTO contatos (nome, telefone, email, status_id)
+            VALUES (?, ?, ?, ?)
+        """, (nome, telefone, email, status_id))
+
+        contato_id = cursor.lastrowid
+
+        # INSERE ENDEREÇO
+        cursor.execute("""
+            INSERT INTO enderecos (contato_id, rua, cidade, estado)
+            VALUES (?, ?, ?, ?)
+        """, (contato_id, rua, cidade, estado))
+
+        conexao.commit()
+        conexao.close()
 
         self.redirect("/listar_cliente")
+
+class ClientesCompletos(tornado.web.RequestHandler):
+    def get(self):
+        query = """
+            SELECT
+                cliente_id,
+                nome,
+                email,
+                telefone,
+                status,
+                rua,
+                cidade,
+                estado
+            FROM vw_clientes_completos
+        """
+        clientes = conexao_db(query)
+        self.render("clientes_completos.html", clientes=clientes)
 
 
 # ------------------ EDITAR CLIENTE ------------------
@@ -78,6 +136,49 @@ class EditarCliente(tornado.web.RequestHandler):
         conexao_db(query, (nome, telefone, email, id_cliente))
 
         self.redirect("/listar_cliente")
+
+class EditarClienteCompleto(tornado.web.RequestHandler):
+    def get(self, cliente_id):
+        query = """
+            SELECT
+                c.id,
+                c.nome,
+                c.email,
+                c.telefone,
+                c.status_id,
+                e.rua,
+                e.cidade,
+                e.estado
+            FROM contatos c
+            LEFT JOIN enderecos e ON c.id = e.contato_id
+            WHERE c.id = ?
+        """
+        cliente = conexao_db(query, (cliente_id,))
+        self.render("editar_cliente.html", cliente=cliente[0])
+
+    def post(self, cliente_id):
+        nome = self.get_argument("nome")
+        email = self.get_argument("email")
+        telefone = self.get_argument("telefone")
+        status_id = self.get_argument("status")
+        rua = self.get_argument("rua")
+        cidade = self.get_argument("cidade")
+        estado = self.get_argument("estado")
+
+        conexao_db("""
+            UPDATE contatos
+            SET nome=?, email=?, telefone=?, status_id=?
+            WHERE id=?
+        """, (nome, email, telefone, status_id, cliente_id))
+
+        conexao_db("""
+            UPDATE enderecos
+            SET rua=?, cidade=?, estado=?
+            WHERE contato_id=?
+        """, (rua, cidade, estado, cliente_id))
+
+        self.redirect("/clientes_completos")
+
 
 
 # ------------------ DELETAR CLIENTE ------------------
@@ -124,11 +225,11 @@ app = tornado.web.Application(
         (r"/", Login),
         (r"/index/?", Index),
         (r"/listar_cliente/?", Clientes),
+        (r"/clientes_completos/?", ClientesCompletos),
         (r"/editar_cliente/?", EditarCliente),
         (r"/deletar_cliente/?", DeletarCliente),
         (r"/historico/?", Historico),
-        (r"/clientes_view/?", ClientesView),
-
+        (r"/editar_cliente_completo/([0-9]+)/?", EditarClienteCompleto),
     ],
     template_path=os.path.join(os.path.dirname(__file__), "templates"),
     static_path=os.path.join(os.path.dirname(__file__), "static"),
