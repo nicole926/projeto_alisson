@@ -3,127 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>Histórico</title>
-
-    <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-body {
-    background: #f1f5f9;
-}
-
-/* MENU */
-.menu {
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    color: white;
-    padding: 20px;
-    text-align: center;
-}
-
-.container {
-    max-width: 1100px;
-    margin: 30px auto;
-    padding: 0 20px;
-}
-
-/* BOTÃO */
-.btn {
-    display: inline-block;
-    background: #22c55e;
-    color: white;
-    padding: 10px 18px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-.btn:hover {
-    background: #16a34a;
-}
-
-/* CARD */
-.card {
-    background: white;
-    padding: 25px;
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-}
-
-/* TABELA */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-thead {
-    background: #e5e7eb;
-}
-
-th, td {
-    padding: 12px;
-    text-align: left;
-}
-
-tr:nth-child(even) {
-    background: #f8fafc;
-}
-
-/* TAG DE OPERAÇÃO */
-.acao {
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    color: white;
-}
-
-.insert {
-    background: #22c55e;
-}
-
-.update {
-    background: #2563eb;
-}
-
-.delete {
-    background: #dc2626;
-}
-</style>
-
+    <link rel="stylesheet" href="{{ static_url('css/style.css') }}?v=3.0">
 </head>
 <body>
 
-<div>
-    <a href="/index" style="color:white; margin-right:20px;">Início</a>
-    <a href="/listar_cliente" style="color:white;">Clientes</a>
+<header class="app-header">
+    📜 Histórico de Alterações
+</header>
+
+<div class="container">
+
+    <div class="topo-clientes">
+        <a href="/listar_cliente" class="btn-inicio">← Voltar</a>
+    </div>
+
+    <div class="card">
+        <h2>Registros do Sistema</h2>
+
+        {% if logs %}
+        <table class="tabela-historico">
+            <thead>
+                <tr>
+                    <th>Data / Hora</th>
+                    <th>Tabela</th>
+                    <th>Ação</th>
+                    <th>Descrição</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for id, tabela, operacao, operacao_css, data_hora, descricao in logs %}
+                <tr>
+                    <td>{{ data_hora }}</td>
+                    <td>{{ tabela }}</td>
+                    <td>
+                        <span class="badge {{ operacao_css }}">
+                            {{ operacao }}
+                        </span>
+                    </td>
+                    <td>{{ descricao }}</td>
+                </tr>
+                {% end %}
+
+            </tbody>
+        </table>
+        {% else %}
+            <p class="msg-vazia">Nenhuma ação registrada.</p>
+        {% end %}
+
+    </div>
+
 </div>
-
-<h2>Histórico de Alterações</h2>
-
-<table border="1" cellpadding="5">
-    <tr>
-        <th>ID</th>
-        <th>Tabela</th>
-        <th>Operação</th>
-        <th>Data/Hora</th>
-        <th>Descrição</th>
-    </tr>
-
-    {% for id, tabela, operacao, data_hora, descricao in logs %}
-    <tr>
-        <td>{{ id }}</td>
-        <td>{{ tabela }}</td>
-        <td>{{ operacao }}</td>
-        <td>{{ data_hora }}</td>
-        <td>{{ descricao }}</td>
-    </tr>
-    {% end %}
-</table>
 
 </body>
 </html>

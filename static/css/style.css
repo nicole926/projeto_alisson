@@ -20,6 +20,51 @@ body {
     font-weight: bold;
 }
 
+/* ===== MENSAGEM DE LISTA VAZIA ===== */
+.msg-vazia {
+    display: none;
+    text-align: center;
+    margin-top: 30px;
+    font-size: 16px;
+    color: #777;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* ===== BUSCA DE CLIENTES ===== */
+.form-busca {
+    max-width: 420px;
+    margin: 25px auto;
+    position: relative;
+}
+
+.form-busca input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.form-busca input:focus {
+    border-color: #2e8b57;
+    box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.2);
+}
+
+.icone-busca {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #777;
+    pointer-events: none;
+}
+
 .search-box {
     display: flex;
     gap: 10px;
@@ -146,4 +191,50 @@ button {
     background: #f1f5f2;
     padding: 14px;
     border-radius: 10px;
+}
+
+/* ===== HISTÓRICO ===== */
+
+.tabela-historico {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.tabela-historico th {
+    background: #2e7d32;
+    color: #fff;
+    padding: 10px;
+    text-align: left;
+}
+
+.tabela-historico td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabela-historico tr:hover {
+    background: #f1f1f1;
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.85em;
+}
+
+.badge.insert {
+    background: #2e7d32;
+    color: #fff;
+}
+
+.badge.update {
+    background: #f9a825;
+    color: #000;
+}
+
+.badge.delete {
+    background: #c62828;
+    color: #fff;
 }

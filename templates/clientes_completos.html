@@ -11,6 +11,16 @@
     📋 Clientes – Cadastro Completo
 </header>
 
+<form class="form-busca">
+    <input
+        type="text"
+        id="campoBusca"
+        placeholder="Buscar cliente..."
+        onkeyup="filtrarClientes()"
+    >
+    <span class="icone-busca">🔍︎</span>
+</form>
+
 <div class="container">
 
     <div class="topo-clientes">
@@ -18,9 +28,15 @@
         <a href="/historico" class="btn-historico">Histórico</a>
     </div>
 
+    <!-- MENSAGEM QUANDO NÃO ENCONTRAR -->
+    <p id="msg-nenhum-cliente" class="msg-vazia">
+        😕 Nenhum cliente encontrado
+    </p>
+
+    <!-- LISTA -->
     {% for c in clientes %}
-    <div class="client-card">
-        <div class="client-title">{{ c[1] }}</div>
+    <div class="client-card cliente-item">
+        <div class="client-title nome-cliente">{{ c[1] }}</div>
 
         <div class="client-info">📞 {{ c[3] }}</div>
         <div class="client-info">✉️ {{ c[2] }}</div>
@@ -30,6 +46,33 @@
     {% end %}
 
 </div>
+
+<!-- SCRIPT DE FILTRO -->
+<script>
+function filtrarClientes() {
+    const termo = document.getElementById("campoBusca").value.toLowerCase();
+    const clientes = document.querySelectorAll(".cliente-item");
+    const mensagem = document.getElementById("msg-nenhum-cliente");
+
+    let encontrados = 0;
+
+    clientes.forEach(cliente => {
+        const nome = cliente
+            .querySelector(".nome-cliente")
+            .innerText
+            .toLowerCase();
+
+        if (nome.includes(termo)) {
+            cliente.style.display = "block";
+            encontrados++;
+        } else {
+            cliente.style.display = "none";
+        }
+    });
+
+    mensagem.style.display = encontrados === 0 ? "block" : "none";
+}
+</script>
 
 </body>
 </html>
